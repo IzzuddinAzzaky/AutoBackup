@@ -1,29 +1,18 @@
-# AutoBackup
-
 #!/bin/bash
 
-# Tentukan folder utama tujuan untuk menyimpan file ZIP berdasarkan tanggal hari ini
-tanggal_waktu=$(date +\%Y-\%m-\%d)
-tujuan_utama="/E/backup/$tanggal_waktu"
+# Nama folder sumber
+folder_sumber="sumber"
 
-# Pastikan folder tujuan utama ada, atau buat jika belum ada
-if [ ! -d "$tujuan_utama" ]; then
-    mkdir -p "$tujuan_utama"
-fi
+# Nama folder tujuan berdasarkan tanggal dan waktu
+folder_tujuan="backup_$(date +\%Y\%m\%d_\%H\%M)"
 
-# Loop untuk setiap folder dalam struktur direktori /C/laragon/www
-find /C/laragon/www -type d | while read -r sumber_folder; do
-    # Periksa apakah folder ini mengandung subfolder "views"
-    if [ -d "$sumber_folder/views" ]; then
-        # Mendapatkan dua nama path terakhir dari path folder sumber
-        folder1=$(basename "$sumber_folder")
-        folder2="views"
-        
-        # Tentukan nama file ZIP dengan format nama sesuai dengan yang Anda inginkan dan menyimpannya di folder tujuan yang sesuai dengan tanggal hari ini di /E/backup
-        jam_waktu=$(date +\%H\%M\%S)
-        nama_zip="$tujuan_utama/$folder1\_$folder2\_$jam_waktu.zip"
-        
-        # Buat file ZIP dari folder sumber
-        zip -r "$nama_zip" "$sumber_folder/views"
-    fi
-done
+# Nama file zip dengan format yang sesuai
+nama_file_zip="${folder_sumber}_$(date +\%Y\%m\%d_\%H\%M).zip"
+
+# Buat folder tujuan
+mkdir -p "$folder_tujuan"
+
+# Lakukan backup folder sumber
+tar -czvf "$folder_tujuan/$nama_file_zip" "$folder_sumber"
+
+echo "Backup selesai: $nama_file_zip"
